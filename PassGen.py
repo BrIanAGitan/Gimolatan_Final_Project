@@ -2,36 +2,42 @@ import secrets
 import string
 import random
 
-lower = string.ascii_lowercase
-upper = string.ascii_uppercase
-digits = string.digits
-special = string.punctuation
-allChars = lower + upper + digits + special
-password = ""
+class PasswordGenerator:
+    def __init__(self, pw_len, min_upper, min_lower, min_digits, min_spec):
+        self.pw_len = pw_len
+        self.min_upper = min_upper
+        self.min_lower = min_lower
+        self.min_digits = min_digits
+        self.min_spec = min_spec
+        self.all_chars = string.ascii_letters + string.digits + string.punctuation
+        self.password = []
 
-pwLen = int(input("How long should the password be? "))
-minUpper = int(input("Minimum Upper Case: "))
-minLower = int(input("Minimum Lower Case: "))
-minDigits = int(input("Minimum Numbers: "))
-minSpec = int(input("Minimum Special: "))
+    def generate_random_chars(self, char_set, count):
+        return ''.join(random.choice(char_set) for _ in range(count))
 
-for i in range(minUpper):
-    password += "".join(random.choice(secrets.choice(upper)))
+    def generate_password(self):
+        self.password.extend(self.generate_random_chars(string.ascii_uppercase, self.min_upper))
+        self.password.extend(self.generate_random_chars(string.ascii_lowercase, self.min_lower))
+        self.password.extend(self.generate_random_chars(string.digits, self.min_digits))
+        self.password.extend(self.generate_random_chars(string.punctuation, self.min_spec))
 
-for i in range(minLower):
-    password += "".join(random.choice(secrets.choice(lower)))
+        remaining = self.pw_len - self.min_lower - self.min_upper - self.min_digits - self.min_spec
+        self.password.extend(self.generate_random_chars(self.all_chars, remaining))
+        random.shuffle(self.password)
 
-for i in range(minDigits):
-    password += "".join(random.choice(secrets.choice(digits)))
+    def get_password(self):
+        return ''.join(self.password)
 
-for i in range(minSpec):
-    password += "".join(random.choice(secrets.choice(special)))
+# User input
+pw_len = int(input("How long should the password be? "))
+min_upper = int(input("Minimum Upper Case: "))
+min_lower = int(input("Minimum Lower Case: "))
+min_digits = int(input("Minimum Numbers: "))
+min_spec = int(input("Minimum Special: "))
 
-remaining = pwLen - minLower - minUpper - minDigits - minSpec
+# Create PasswordGenerator object
+password_generator = PasswordGenerator(pw_len, min_upper, min_lower, min_digits, min_spec)
 
-for i in range(remaining):
-    password += "".join(random.choice(secrets.choice(allChars)))
-
-password = list(password)
-random.shuffle(password)
-print("".join(password))
+# Generate and print the password
+password_generator.generate_password()
+print("Generated Password:", password_generator.get_password())
