@@ -70,3 +70,4 @@ elif choice == "2":
     print("Generated Password:", password_generator.get_password())
 else:
     print("Invalid choice. Please enter either '1' or '2'.")
+
